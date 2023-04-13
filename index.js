@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express();
 const port = process.env.PORT || 5000;
-const cors = require('cors')
+const cors = require('cors');
 
 app.use(cors())
 app.use(express.json())
@@ -20,11 +20,18 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const productCollection = client.db('car-gallery').collection('products')
+        const ordersCollection = client.db('car-gallery').collection('orders')
 
         app.get('/products', async (req, res) => {
             const query = {};
             const products = await productCollection.find(query).toArray();
             res.send(products);
+        });
+
+        app.post('/orders', async (req, res) => {
+            const query = req.body;
+            const orders = await ordersCollection.insertOne(query)
+            res.send(orders);
         })
 
     }
